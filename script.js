@@ -14,6 +14,7 @@ const messages = [
 let hoverCount = 0;
 let yesSize = 1;
 let allowClickNo = false;
+let resetProcess = false;
 
 function randomPosition() {
   const maxX = window.innerWidth - noBtn.offsetWidth - 20;
@@ -31,11 +32,11 @@ function showPopup(message) {
   popup.style.display = "block";
   setTimeout(() => {
     popup.style.display = "none";
-  }, 2000);
+  }, 3500); // Pop-up stays on screen for 3.5 seconds
 }
 
 noBtn.addEventListener("mouseover", () => {
-  if (!allowClickNo) {
+  if (!allowClickNo && !resetProcess) {
     randomPosition();
     hoverCount++;
     const msg = messages[Math.floor(Math.random() * messages.length)];
@@ -58,6 +59,18 @@ noBtn.addEventListener("click", () => {
     randomPosition();
     yesSize += 0.5;
     yesBtn.style.transform = `scale(${yesSize})`;
+
+    // Reset process after multiple attempts
+    if (yesSize > 5) {
+      resetProcess = true;
+      yesSize = 1; // Reset yes button size
+      yesBtn.style.transform = `scale(${yesSize})`; // Reset yes button size
+      allowClickNo = false; // Allow the user to click No again
+      noBtn.innerText = "No 😢"; // Reset No button text
+      setTimeout(() => {
+        resetProcess = false; // Allow the process to restart with a bigger Yes button
+      }, 2000); // Allow the reset to happen after 2 seconds
+    }
   } else {
     randomPosition();
   }
